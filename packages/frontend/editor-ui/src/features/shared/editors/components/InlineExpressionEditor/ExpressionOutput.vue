@@ -3,7 +3,10 @@ import { EditorState, type Extension } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 
 import { useI18n } from '@n8n/i18n';
-import { highlighter } from '../../plugins/codemirror/resolvableHighlighter';
+import {
+	coloringStateField,
+	highlighter,
+} from '../../plugins/codemirror/resolvableHighlighter';
 
 import type { Plaintext, Resolved, Segment } from '@/app/types/expressions';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -110,7 +113,10 @@ function initializeEditor() {
 				EditorState.readOnly.of(true),
 				EditorView.lineWrapping,
 				EditorView.domEventHandlers({ scroll: (_, view) => forceParse(view) }),
-				...props.extensions,
+				// Register the highlight field up front. Otherwise the first addColor call appends
+					// it in the same transaction as the color effects, and those effects are dropped.
+					coloringStateField,
+					...props.extensions,
 			],
 		}),
 	});
