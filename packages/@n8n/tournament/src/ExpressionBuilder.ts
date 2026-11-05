@@ -286,5 +286,8 @@ export const getExpressionCode = (
 		newProg.body.push(retData);
 	}
 
-	return [print(newProg).code, { has: { function: hasFn, templateString: hasTempString } }];
+	const debugCode = print(newProg).code;
+	// TEMP-DEBUG
+	console.log('TOURNAMENT_DEBUG', JSON.stringify(expr), JSON.stringify(debugCode));
+	return [debugCode, { has: { function: hasFn, templateString: hasTempString } }];
 };
