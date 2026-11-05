@@ -149,6 +149,13 @@ const fixStringNewLines = (node: types.namedTypes.File): types.namedTypes.File =
 			);
 			path.replace(el);
 		},
+		// Rebuild the template literal as a new node. Patching the original multi-line
+		// source around the rewritten quasis inserts stray whitespace into the output.
+		visitTemplateLiteral(path) {
+			this.traverse(path);
+			path.replace(b.templateLiteral(path.node.quasis, path.node.expressions));
+			return false;
+		},
 	});
 
 	return node;
@@ -286,8 +293,5 @@ export const getExpressionCode = (
 		newProg.body.push(retData);
 	}
 
-	const debugCode = print(newProg).code;
-	// TEMP-DEBUG
-	console.log('TOURNAMENT_DEBUG', JSON.stringify(expr), JSON.stringify(debugCode));
-	return [debugCode, { has: { function: hasFn, templateString: hasTempString } }];
+	return [print(newProg).code, { has: { function: hasFn, templateString: hasTempString } }];
 };
